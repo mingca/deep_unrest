@@ -7,7 +7,7 @@ module DeepUnrest
     @@temp_ids = {}
 
     def context
-      { current_user: current_user }
+      { current_user: _current_user }
     end
 
     # rails can't deal with array indices in params (converts them to hashes)
@@ -30,7 +30,7 @@ module DeepUnrest
     def update
       redirect = allowed_params[:redirect]
       data = repair_nested_params(allowed_params)[:data]
-      results = DeepUnrest.perform_update(request.uuid, data, current_user)
+      results = DeepUnrest.perform_update(request.uuid, data, _current_user)
       resp = { destroyed: results[:destroyed],
                tempIds: results[:temp_ids] }
       resp[:redirect] = results[:redirect_regex].call(redirect) if redirect
@@ -45,16 +45,18 @@ module DeepUnrest
       @@temp_ids.delete(request.uuid)
     end
 
-    def current_user
-      instance_eval &DeepUnrest.get_user
-    end
-
     def allowed_params
       params.permit(:redirect,
                     data: [:destroy,
                            :path,
                            :errorPath,
                            { attributes: {} }])
+    end
+
+    private
+
+    def _current_user
+      instance_eval &DeepUnrest.get_user
     end
   end
 end
