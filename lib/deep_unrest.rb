@@ -182,10 +182,18 @@ module DeepUnrest
                   scope_type: scope_type,
                   scope: scope,
                   klass: to_class(type),
-                  error_path: operation[:errorPath],
                   id: id }
+      unless scope_type == :show
+        context[:path] = [
+          memo.map { |m| m[:path] }.join('').presence,
+          "#{type}#{id}"
+        ].compact.join('.')
 
-      context[:path] = operation[:path] unless scope_type == :show
+        if memo.size == resources.size - 1
+          context[:path] = operation[:path]
+          context[:error_path] = operation[:errorPath]
+        end
+      end
       memo.push(context)
     end
   end
