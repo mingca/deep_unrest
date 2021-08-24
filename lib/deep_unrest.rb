@@ -469,7 +469,8 @@ module DeepUnrest
                               field_name].reject(&:empty?).compact.join('.')
         deep_unrest_path = [operation[:dr_error_key],
                             field_name].compact.join('.')
-        { title: "#{path_info[:field].humanize} #{format_error_title(msg)}",
+        attribute_name = operation[:type].classify.constantize.human_attribute_name(path_info[:field])
+        { title: "#{attribute_name} #{format_error_title(msg)}",
           detail: msg,
           source: { pointer: pointer,
                     deepUnrestPath: deep_unrest_path,
