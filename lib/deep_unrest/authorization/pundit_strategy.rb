@@ -28,7 +28,7 @@ module DeepUnrest
            source: { pointer: scope[:path] } }].to_json
       end
 
-      def self.get_entity_authorization(scope, user)
+      def self.get_entity_authorization(scope, user, params)
         if %i[create update_all index destroy_all].include?(scope[:scope_type])
           target = scope[:klass]
         else
@@ -36,12 +36,12 @@ module DeepUnrest
                                              *scope[:scope][:arguments])
         end
 
-        Pundit.policy!(user, target).send(get_policy_name(scope[:scope_type]))
+        Pundit.policy!(user, target).send(get_policy_name(scope[:scope_type]), params)
       end
 
-      def self.authorize(scopes, user)
+      def self.authorize(scopes, user, params)
         scopes.each do |s|
-          allowed = get_entity_authorization(s, user)
+          allowed = get_entity_authorization(s, user, params)
           unless allowed
             raise DeepUnrest::Unauthorized, auth_error_message(user, s)
           end

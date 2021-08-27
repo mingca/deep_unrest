@@ -523,7 +523,7 @@ module DeepUnrest
     scopes = collect_all_scopes(viable_params)
 
     # authorize user for requested scope(s)
-    DeepUnrest.authorization_strategy.authorize(scopes, user).flatten
+    DeepUnrest.authorization_strategy.authorize(scopes, user, params).flatten
 
     # bulid update arguments
     mutations = build_mutation_body(viable_params, scopes, user)
